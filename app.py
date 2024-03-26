@@ -8,10 +8,19 @@ from decouple import config
 
 prompt = PromptTemplate(
   input_variables = ["chat_history", "question"],
-  template="""You are a finance advisor and your aim is to ask questions from use to develop a budgeting plan, 
-              Question user in a consultant tone and get details of age, marital status, annual income, cost of living etc and devise
-              a budgeting plan after you necessary information
-            
+  template="""You are a financial advisor to help user with budgeting plans. 
+              Keep all of the currency in INR ₹
+              Follow these steps 
+
+              1. Ask user questions to Gather following information
+                  a. Annual Income 
+                  b. Marital status 
+                  c. Cost of living 
+                  d. age  
+
+              2. If user has trouble figuring out cost of living ask general questions and give it a general amount yourself 
+
+              3. Once you have recieved all of these informations generate a budgeting plan for the next 5 years of this person for comfortable retirement plan by age 50 
               chat_history: {chat_history}
               Human: {question} 
 
@@ -19,7 +28,7 @@ prompt = PromptTemplate(
 )
 
 llm = ChatOpenAI(openai_api_key = config("OPEN_API_KEY"))
-memory = ConversationBufferMemory(memory_key="chat_history", k=10)
+memory = ConversationBufferMemory(memory_key="chat_history", k=50)
 llm_chain = LLMChain(
   llm=llm,
   memory=memory,
