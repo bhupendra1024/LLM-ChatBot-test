@@ -31,12 +31,12 @@ Setup
 
 
 
+![Screenshot (104)](https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/8e378d65-4346-4341-a0a6-6051b6ddafa7)
+![Screenshot (105)](https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/c22859b2-a368-466c-ab4f-6f87e78c68fb)
+![Screenshot (106)](https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/c68ffbe3-31ab-4267-a37e-f98d4e4f78cc)
 
 
-![Screenshot (107)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/6a8e0399-c9ba-49ae-9b75-65aabacf4a4a)
-![Screenshot (108)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/68c9897e-f120-4866-99c5-4c6a80280119)
-![Screenshot (109)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/76e4b51f-a809-4938-bfef-58463e993861)
-![Screenshot (110)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/fea849de-51fa-40e4-9aef-a89c51cca097)
-![Screenshot (111)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/ecc4e776-3b70-454f-af6e-77c4979303dc)
+
+
 
 
