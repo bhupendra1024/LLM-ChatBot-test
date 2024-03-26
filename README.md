@@ -1,13 +1,42 @@
 # LLM-ChatBot-test
 
-Streamlit application that leverages the LangChain library to create a financial advisor bot. The bot is designed to interact with users, asking for personal details such as age, marital status, annual income, and cost of living to devise a budgeting plan. The application uses a custom prompt template and an LLMChain for generating responses based on the user's input.
+
+
+
+  The bot assists users in creating budgeting plans tailored to their financial circumstances, with a focus on retirement planning.
 
 Features
 
-Custom Prompt Template: The bot uses a custom prompt template to guide the conversation, ensuring it asks the right questions to gather necessary information for budgeting.
+  Financial Advisory Chatbot: Utilizes OpenAI's language model to engage in conversational interactions with users.
 
-LLMChain Integration: The application integrates with LangChain's LLMChain to generate responses based on the user's input and the conversation history.
+  Budgeting Assistance: Guides users through the process of providing essential financial information such as annual income, marital status, cost of living, and age to generate personalized budgeting plans.
 
-Memory Management: Utilizes ConversationBufferMemory to maintain the conversation history, ensuring context is preserved across interactions.
+  Retirement Planning: Generates a five-year budgeting plan aimed at achieving a comfortable retirement by age 50 based on the user's input.
 
-Streamlit Interface: The application is built with Streamlit, providing a user-friendly interface for the chatbot.
+Setup
+
+  1. Clone the repo.
+  2. Install the required dependencies:
+     
+         pip install openai langchain streamlit python-decouple
+         
+  4. Obtain an OpenAI API key and set it as an environment variable.
+
+  6. Create a .env file in the root directory and add your OpenAI API key:
+     
+          OPEN_API_KEY=your_openai_api_key_here
+  7. Run the Streamlit app:
+     
+          streamlit run app.py
+
+
+
+
+
+![Screenshot (107)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/6a8e0399-c9ba-49ae-9b75-65aabacf4a4a)
+![Screenshot (108)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/68c9897e-f120-4866-99c5-4c6a80280119)
+![Screenshot (109)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/76e4b51f-a809-4938-bfef-58463e993861)
+![Screenshot (110)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/fea849de-51fa-40e4-9aef-a89c51cca097)
+![Screenshot (111)](https://github.com/Fin-X-Admin/FinX-Demo/assets/164788719/ecc4e776-3b70-454f-af6e-77c4979303dc)
+
+
