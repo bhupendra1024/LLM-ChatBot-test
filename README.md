@@ -13,6 +13,10 @@ Features
 
   Retirement Planning: Generates a five-year budgeting plan aimed at achieving a comfortable retirement by age 50 based on the user's input.
 
+  Effective conversation flow by providing clearly instructed prompts and gather user information with custom prompt templates. 
+  
+  Engineered the integration of Google Sheets as a dynamic database for real-time user financial data management; amplified chatbot's personalized financial advice capabilities and user experience optimization.
+
 Setup
 
   1. Clone the repo.
@@ -29,9 +33,12 @@ Setup
      
           streamlit run app.py
 
-![WhatsApp Image 2024-04-01 at 19 12 45_ab91a41b](https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/cacdb2ec-e357-4da8-adff-ffa4fd1218f9)
-![WhatsApp Image 2024-04-01 at 19 12 46_3571720f](https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/9621a5dc-d68c-4175-8201-50b62fe793f3)
-![WhatsApp Image 2024-04-01 at 19 12 46_f6b22a1b](https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/718ef2bb-3389-4706-8975-4d780c6bf280)
+
+
+<img width="956" alt="Screenshot 2024-04-17 110135" src="https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/e2d319f6-2d9e-4cb7-be19-49df6e766bac">
+<img width="955" alt="2" src="https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/8c1d708d-eed4-41c3-b724-be241c9e06cc">
+<img width="958" alt="3" src="https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/13146533-8e6d-43d6-8aa9-b9bc1b01067d">
+<img width="949" alt="4" src="https://github.com/bhupendra1024/LLM-ChatBot-test/assets/68160975/90dfa43a-923c-48e2-9a86-0af133051492">
 
 
 
