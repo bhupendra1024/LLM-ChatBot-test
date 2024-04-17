@@ -1,33 +1,29 @@
 import os
 import re
 import streamlit as st
-
+import json 
 from typing import List
-
 # Google sheets as DB
-
 import pandas as pd
 from streamlit_gsheets import GSheetsConnection
-
-
 #############
 from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import LLMChain
 from langchain.prompts import PromptTemplate
-
-from langchain_core.pydantic_v1 import BaseModel, Field
-
 from langchain_community.chat_models import ChatOpenAI
+from langchain.output_parsers import PydanticOutputParser, OutputFixingParser
+from langchain_core.pydantic_v1 import BaseModel, Field
 from decouple import config
 
-from langchain_core.output_parsers import JsonOutputParser
-from langchain_core.pydantic_v1 import BaseModel, Field
-
+#parser
 class user_detail(BaseModel):
-    annual_income: int = Field(description="take annual income from the user")
-    marital_status: str = Field(description="take the marital status from user")
-
+    # user_data: dict = Field(description="The output should only contain a JSON instance that conforms to the JSON schema below. Here is the output schema delimited by triple backticks: ```{'Annual_income': '20000', 'Marital_Status': 'Single', ...}```")
+    annual_income: int = Field(description="integer, default: 0")
+    marital_status: str = Field(description="single or married, default: NaN")
+    cost_of_living: int = Field(description="Integer value, default: 0")
+    age: int = Field(description="Integer value, User's age, default: 0")
+    
 
 # os.environ['OPEN_API_KEY'] = ''
 st.set_page_config(
@@ -37,39 +33,8 @@ st.set_page_config(
 )
 
 
-
-
-# Function to extract user information from the prompt
-def extract_user_info(arg):
-    user_info = {}
-
-    print(user_info)
-    # Extract annual income
-    income_match = re.search(r'"Annual Income": (\d+)', arg, re.IGNORECASE)
-    if income_match:
-        user_info['Annual Income ₹'] = int(income_match.group(1))
-  
-    #Extracting Martal Status 
-    # marital_status_match = re.search(r'Marital Status: (\w+)', arg, re.IGNORECASE)
-    marital_status_match = re.search(r'"Marital Status": (\w+)', arg, re.IGNORECASE)
-    if marital_status_match:
-        user_info['Marital Status'] = marital_status_match.group(1)
-    
-    
-    # Extract cost of living
-    cost_of_living_match = re.search(r'"Cost of Living": (\d+)', arg, re.IGNORECASE)
-    if cost_of_living_match:
-        user_info['Cost of Living ₹'] = int(cost_of_living_match.group(1))
-    
-    # Extract age
-    age_match = re.search(r'"Age": (\d+)', arg, re.IGNORECASE)
-    if age_match:
-        user_info['Age'] = int(age_match.group(1))
-
-    return user_info
-
-
 user_prompt = st.chat_input()
+llm = ChatOpenAI(openai_api_key = config("OPEN_API_KEY"),  temperature=0)  #model="gpt-4",
 
 
 prompt1 = PromptTemplate(
@@ -95,8 +60,9 @@ prompt1 = PromptTemplate(
               AI:"""
 )
 
-parser = JsonOutputParser(pydantic_object=user_detail)
-print(parser)
+parser = PydanticOutputParser(pydantic_object=user_detail)
+output_parser = OutputFixingParser.from_llm(parser=parser, llm=llm)
+
 # for extracting user info
 prompt2 = PromptTemplate(
   input_variables = ["chat_history", "human_input"],
@@ -121,38 +87,14 @@ prompt2 = PromptTemplate(
 
               update keys if user updates any 
             
-              only reply with dictionary and nothing else 
+              only reply with dictionary and nothing else and do not populate it unless the user has provided these informations
               chat_history: {chat_history}
               Human: {human_input} 
 
               AI:""",
-              # partial_variables={"format_instructions": parser.get_format_instructions()},
+              #parser
+              partial_variables={"format_instructions": parser.get_format_instructions()},
 )
-
-prompt3 = PromptTemplate(
-    template='''You are a financial advisor to help user with budgeting plans. 
-              Keep all of the currency in INR ₹
-              Follow these steps 
-
-              If user tries to give information about 
-                  a. Annual Income 
-                  b. Marital Status 
-                  c. Cost of living 
-                  d. age 
-
-              all at once or step by step then just output a dictionry of each input and please make sure the money amount is all in numbers and the String starts with capital letter
-
-              
-                  Annual Income 
-                  Marital Status 
-                  Cost of living 
-                  Age \n{format_instructions}\n{chat_history}\n''',
-    input_variables=["chat_history"],
-    partial_variables={"format_instructions": parser.get_format_instructions()},
-)
-
-
-llm = ChatOpenAI(openai_api_key = config("OPEN_API_KEY"),  temperature=0.6, model="gpt-4")  #model="gpt-4",
 
 
 memory = ConversationBufferMemory(memory_key="chat_history", llm=llm)
@@ -172,18 +114,7 @@ llm_chain_2  = LLMChain(
 )
 
 
-
-
-chain = prompt3 | llm | parser
-print(type(chain))
-
-chain.invoke({"chat_history" : user_detail})
-
-
-
-
-
-
+# Fonts and Style
 hide_st_style = """
             <style>
             #MainMenu {visibility: hidden;}
@@ -207,12 +138,25 @@ for message in st.session_state.messages:
     st.write(message["content"])
 
 
-# user_prompt = st.chat_input()
 
 if user_prompt is not None:
   st.session_state.messages.append({"role": "user", "content": user_prompt})
   with st.chat_message("user"):
     st.write(user_prompt)
+
+def process_data(parsed_output):
+   user_data = {
+      'annual_income' : parsed_output.annual_income,
+      'marital_status': parsed_output.marital_status,
+      'cost_of_living': parsed_output.cost_of_living,
+      'age': parsed_output.age
+   }
+   user_data_json = json.dumps(user_data)
+   print(user_data)
+   print(user_data_json)
+   st.session_state.user_info.update(user_data)
+
+
 
 if st.session_state.messages[-1]["role"] != "assistant":
   with st.chat_message("assistant"):
@@ -221,22 +165,37 @@ if st.session_state.messages[-1]["role"] != "assistant":
 
       st.write(ai_response)
 
+      #for Side bar user info update and JSON format ouput
       ai_dict = llm_chain_2.predict(human_input=user_prompt)
-      print(ai_dict)
-      print(type(ai_dict))
-      extracted_info = extract_user_info(ai_dict)
-      # print(extracted_info)
 
-      st.session_state.user_info.update(extracted_info)
+      ai_dict = llm_chain_2.predict(human_input=user_prompt)
+      parsed_output = output_parser.parse(ai_dict)
+      print("This is Parsed Output:", parsed_output)
 
+      #-------------------------------------------#
+
+      sheet_data = [ {"Annual_Income": parsed_output.annual_income, "Marital_Status": parsed_output.marital_status, 
+                "Cost_of_Living": parsed_output.cost_of_living, "Age": parsed_output.age} ]
+
+      #Establishing a Google Sheets connection
+      conn = st.connection("gsheets", type=GSheetsConnection)
+      # data = conn.read(worksheet="Sheet1")
+
+      #updating the Google sheet 
+      up_data = conn.update(worksheet="Sheet1", data=sheet_data)
+      # del data["Unnamed: 4"]
+      up_data = up_data.dropna(how="all")
+      st.dataframe(up_data) 
+
+
+
+    #-------------------------------------------#
+
+      #JSON format and Dictionary format output
+      process_data(parsed_output) 
 
   new_ai_message = {"role": "assistant", "content": ai_response}
   st.session_state.messages.append(new_ai_message)
-
-
-
-###############################
-  
 
 
 ##############################
@@ -246,16 +205,6 @@ if st.session_state.messages[-1]["role"] != "assistant":
 if 'user_info' not in st.session_state:
     st.session_state.user_info = {}
 
-
-# Collect user prompt from atop
-# user_prompt = st.chat_input()
-
-
-# Extract and store user information in session state
-if user_prompt:
-    extracted_info = extract_user_info(user_prompt)
-    st.session_state.user_info.update(extracted_info)
-
 # Display user info in the sidebar
 with st.sidebar:
     st.subheader("User Information")
@@ -264,27 +213,3 @@ with st.sidebar:
             st.write(f"{key.capitalize()}: {value}")
 
 
-
-#-------------------------------------------#
-
-
-
-#Establishing a Google Sheets connection
-conn = st.connection("gsheets", type=GSheetsConnection)
-data = conn.read(worksheet="Sheet1")
-
-
-#extracted data to pd.dataframe
-# ex_data = pd.DataFrame(ai_dict)
-
-# conn.update(worksheet="Sheet1", data=ex_data)
-
-#print(data)
-# st.dataframe(data)
-
-# if st.button("New Worksheet"):
-#     conn.create(worksheet="Orders", data=extracted_info)
-#     st.success("Worksheet Created 🎉")
-  
-
-#-------------------------------------------#
